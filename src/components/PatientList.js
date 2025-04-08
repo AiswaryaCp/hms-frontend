@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { fetchPatients, addPatient } from "../api";
+import DataTable from 'react-data-table-component';
+import "./PatientList.css"
+
 
 const PatientList = () => {
     const [patients, setPatients] = useState([]);
@@ -27,53 +30,106 @@ const PatientList = () => {
         const addedPatient = await addPatient(newPatient);
         setPatients([...patients, addedPatient]);
         setNewPatient({ patient_mrn:"", first_name: "", last_name: "", date_of_birth: "", gender: "Male", phone_number: "", email: "", address: "", });
+        setShowModal(false);
     };
+    const [showModal, setShowModal] = useState(false);
+
+    const columns = [
+        {
+            name: 'MRN',
+            selector: row => row.patient_mrn,
+            sortable: true,
+        },
+        {
+            name: 'Name',
+            selector: row => `${row.first_name} ${row.last_name}`,
+            sortable: true,
+        },
+        {
+            name: 'DOB',
+            selector: row => row.date_of_birth,
+            sortable: true,
+        },
+        {
+            name: 'Gender',
+            selector: row => row.gender,
+            sortable: true,
+        },
+    ];
+
+    const customStyles = {
+        table: {
+            style: {
+                border: '1px solid #ddd',
+                borderRadius: '8px',
+                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+                width: '95%',
+                margin: '0 auto',
+            },
+        },
+        headRow: {
+            style: {
+                backgroundColor: '#123357',
+                color: '#ffffff',
+                fontWeight: 'bold',
+                fontSize: '16px',
+            },
+        },
+        rows: {
+            style: {
+                fontSize: '14px',
+                color: '#333',
+            },
+        },
+    };
+    
 
     return (
         <div>
-            <h2>Patient List</h2>
-                <table border='1'>
-                    <thead>
-                        <tr>
-                            <th>MRN</th>
-                            <th>Name</th>
-                            <th>DOB</th>
-                            <th>Gender</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {patients.length > 0 ? (
-                            patients.map((patient) => (
-                                <tr key={patient.id}>
-                                    <td>{patient.patient_mrn}</td>
-                                    <td>{patient.first_name} {patient.last_name}</td>
-                                    <td>{patient.date_of_birth}</td>
-                                    <td>{patient.gender}</td>
-                                </tr>
-                            ))
-                        ) : (
-                            <tr>
-                                <td colSpan="4">No Patients Found</td>
-                            </tr>
-                        )}
-                    </tbody>
-                </table>
+            <h2 style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <p></p>
+                <button className="button-add-patient" onClick={() => setShowModal(true)}>+ Add Patient</button>
+            </h2>
 
-            <h3>Add New Patient</h3>
-            <form onSubmit={handleSubmit}>
-                <input type="text" name="first_name" placeholder="First Name" value={newPatient.first_name} onChange={handleChange} required />
-                <input type="text" name="last_name" placeholder="Last Name" value={newPatient.last_name} onChange={handleChange} required />
-                <input type="date" name="date_of_birth" value={newPatient.date_of_birth} onChange={handleChange} required />
-                <select name="gender" value={newPatient.gender} onChange={handleChange}>
-                    <option value="Male">Male</option>
-                    <option value="Female">Female</option>
-                    <option value="Other">Other</option>
-                </select>
-                <input type="text" name="phone_number" placeholder="Phone Number" value={newPatient.phone_number} onChange={handleChange} required />
-                <input type="email" name="email" placeholder="Email" value={newPatient.email} onChange={handleChange} />
-                <textarea name="address" placeholder="Address" value={newPatient.address} onChange={handleChange}></textarea>
-                <button type="submit">Add Patient</button>
-            </form>
+            <DataTable
+                columns={columns}
+                data={patients}
+                pagination
+                highlightOnHover
+                pointerOnHover
+                striped
+                noDataComponent="No Patients Found"
+                customStyles={customStyles}
+            />
+
+            {showModal && (
+                <div className="modal-overlay">
+                    <div className="modal-content">
+                        <div className="modal-header">
+                            <h3>Add New Patient</h3>
+                            <button className="close-button" onClick={() => setShowModal(false)}>&times;</button>
+                        </div>
+                        <form onSubmit={handleSubmit}>
+                            <input type="text" name="first_name" placeholder="First Name" value={newPatient.first_name} onChange={handleChange} required />
+                            <input type="text" name="last_name" placeholder="Last Name" value={newPatient.last_name} onChange={handleChange} required />
+                            <input type="date" name="date_of_birth" value={newPatient.date_of_birth} onChange={handleChange} required />
+                            <select name="gender" value={newPatient.gender} onChange={handleChange}>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                                <option value="Other">Other</option>
+                            </select>
+                            <input type="text" name="phone_number" placeholder="Phone Number" value={newPatient.phone_number} onChange={handleChange} required />
+                            <input type="email" name="email" placeholder="Email" value={newPatient.email} onChange={handleChange} />
+                            <textarea name="address" placeholder="Address" value={newPatient.address} onChange={handleChange}></textarea>
+                            <div className="modal-buttons">
+                                <button className="button-modal-add" type="submit">Add Patient</button>
+                                <button className="button-modal-cancel" type="button" onClick={() => setShowModal(false)}>Cancel</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+
         </div>
     );
 };

@@ -1,0 +1,23 @@
+/* src/components/Header.css */
+.header {
+    display: flex;
+    align-items: center;
+    background-color: #dae6ee;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  
+  .logo {
+    height: 100px;
+    object-fit: contain;
+  }
+
+.medical-icon {
+  font-size: 32px;
+  color: #1977c4;
+}
+
+.icon-wrapper {
+  align-items: center;
+}
+
+  
