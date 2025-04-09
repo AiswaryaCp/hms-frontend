@@ -6,6 +6,7 @@ import "./PatientList.css"
 
 const PatientList = () => {
     const [patients, setPatients] = useState([]);
+    const [filterText, setFilterText] = useState("");
     const [newPatient, setNewPatient] = useState({
         patient_mrn:"",
         first_name: "",
@@ -82,6 +83,13 @@ const PatientList = () => {
             },
         },
     };
+
+    const filteredPatients = patients.filter((patient) =>
+        Object.values(patient)
+            .join(" ")
+            .toLowerCase()
+            .includes(filterText.toLowerCase())
+    );
     
 
     return (
@@ -93,13 +101,30 @@ const PatientList = () => {
 
             <DataTable
                 columns={columns}
-                data={patients}
+                data={filteredPatients}
                 pagination
                 highlightOnHover
                 pointerOnHover
                 striped
                 noDataComponent="No Patients Found"
                 customStyles={customStyles}
+                subHeader
+                subHeaderComponent={
+                    <input
+                        type="text"
+                        placeholder="Search patients..."
+                        value={filterText}
+                        onChange={(e) => setFilterText(e.target.value)}
+                        className="patient-search-input"
+                        style={{
+                            padding: "8px",
+                            width: "300px",
+                            borderRadius: "6px",
+                            border: "1px solid #ccc",
+                            marginLeft: "10px"
+                        }}
+                    />
+                }
             />
 
             {showModal && (
